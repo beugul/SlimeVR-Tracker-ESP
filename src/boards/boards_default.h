@@ -43,10 +43,10 @@ BATTERY_R2(40.2)
 
 #elif BOARD == BOARD_SLIMEVR_V1_2
 
-SDA(4)
-SCL(5)
-INT(2)
-INT2(16)
+SDA(13)
+SCL(14)
+INT(15)
+INT2(0)
 BATTERY(17)
 LED(2)
 INVERTED_LED(true)
@@ -213,14 +213,14 @@ PIN_IMU_SDA, PRIMARY_IMU_OPTIONAL, BMI160_QMC_REMAP) \
 #define SENSOR_DESC_LIST                             \
 	SENSOR_DESC_ENTRY(                               \
 		IMU,                                         \
-		DIRECT_PIN(15),                              \
+		DIRECT_PIN(16),                              \
 		IMU_ROTATION,                                \
-		DIRECT_SPI(24'000'000, MSBFIRST, SPI_MODE3), \
+		DIRECT_SPI(12'000'000, MSBFIRST, SPI_MODE3), \
 		PRIMARY_IMU_OPTIONAL,                        \
 		DIRECT_PIN(PIN_IMU_INT),                     \
 		0                                            \
-	)                                                \
-	SENSOR_DESC_ENTRY(                               \
+	)                                                
+	/*SENSOR_DESC_ENTRY(                               \
 		SECOND_IMU,                                  \
 		SECONDARY_IMU_ADDRESS_TWO,                   \
 		SECOND_IMU_ROTATION,                         \
@@ -228,7 +228,7 @@ PIN_IMU_SDA, PRIMARY_IMU_OPTIONAL, BMI160_QMC_REMAP) \
 		SECONDARY_IMU_OPTIONAL,                      \
 		DIRECT_PIN(PIN_IMU_INT_2),                   \
 		0                                            \
-	)
+	)*/
 #else
 #define SENSOR_DESC_LIST                       \
 	SENSOR_DESC_ENTRY(                         \

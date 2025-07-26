@@ -27,10 +27,10 @@
 
 // Set parameters of IMU and board used
 #ifndef IMU
-#define IMU IMU_AUTO
+#define IMU IMU_ICM45686
 #endif
 #ifndef SECOND_IMU
-#define SECOND_IMU IMU_AUTO
+#define SECOND_IMU IMU
 #endif
 #ifndef BOARD
 #define BOARD BOARD_SLIMEVR_V1_2
@@ -52,22 +52,24 @@
 // Set I2C address here or directly in IMU_DESC_ENTRY for each IMU used
 // If not set, default address is used based on the IMU and Sensor ID
 // #define PRIMARY_IMU_ADDRESS_ONE 0x4a
-// #define SECONDARY_IMU_ADDRESS_TWO 0x4b
+//#define SECONDARY_IMU_ADDRESS_TWO 0x0c
+
+#define MAX_IMU_COUNT 1
 
 #ifndef BATTERY_MONITOR
 // Battery monitoring options (comment to disable):
 //   BAT_EXTERNAL for ADC pin,
 //   BAT_INTERNAL for internal - can detect only low battery,
 //   BAT_MCP3021 for external ADC connected over I2C
-#define BATTERY_MONITOR BAT_EXTERNAL
+#define BATTERY_MONITOR BAT_INTERNAL
 #endif
 
 // --- OVERRIDES FOR DEFAULT PINS
 
-// #define PIN_IMU_SDA 14
-// #define PIN_IMU_SCL 12
-// #define PIN_IMU_INT 16
-// #define PIN_IMU_INT_2 13
+#define PIN_IMU_SDA 4
+#define PIN_IMU_SCL 5
+#define PIN_IMU_INT 15
+#define PIN_IMU_INT_2 0
 // #define PIN_BATTERY_LEVEL 17
 // #define LED_PIN 2
 // #define LED_INVERTED true

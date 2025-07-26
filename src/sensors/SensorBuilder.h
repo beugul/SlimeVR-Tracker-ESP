@@ -252,9 +252,10 @@ public:
 			auto& regInterface = *(result->second);
 
 			m_Manager->m_Logger.info(
-				"Sensor %d automatically detected with %s",
+				"Sensor %d automatically detected with %s on %s",
 				sensorID,
-				getIMUNameByType(sensorType)
+				getIMUNameByType(sensorType),
+				sensorInterface->toString().c_str()
 			);
 			sensor = buildSensorDynamically(
 				sensorType,

@@ -107,7 +107,7 @@ private:
 	SensorInterface<I2CPCASensorInterface, int, int, int, int> pcaWireInterfaces;
 	SensorInterface<Sensors::I2CImpl, uint8_t> i2cImpls;
 	SensorInterface<DirectSPIInterface, SPIClass, SPISettings> directSPIInterfaces;
-	SensorInterface<Sensors::SPIImpl, DirectSPIInterface*, PinInterface*> spiImpls;
+	SensorInterface<Sensors::SPIImpl, DirectSPIInterface*, DirectPinInterface*> spiImpls;
 };
 
 }  // namespace SlimeVR

@@ -54,19 +54,19 @@
 #endif
 
 #ifndef IMU_USE_EXTERNAL_CLOCK
-#define IMU_USE_EXTERNAL_CLOCK true  // Use external clock for IMU (ICM-45686 only)
+#define IMU_USE_EXTERNAL_CLOCK false  // Use external clock for IMU (ICM-45686 only)
 #endif
 
 #ifndef VENDOR_NAME
-#define VENDOR_NAME "Unknown"
+#define VENDOR_NAME "Beugul"
 #endif
 
 #ifndef VENDOR_URL
-#define VENDOR_URL ""
+#define VENDOR_URL "beugul.dev"
 #endif
 
 #ifndef PRODUCT_NAME
-#define PRODUCT_NAME "DIY SlimeVR Tracker"
+#define PRODUCT_NAME "Beugul's SlimeVR Tracker"
 #endif
 
 #ifndef UPDATE_ADDRESS

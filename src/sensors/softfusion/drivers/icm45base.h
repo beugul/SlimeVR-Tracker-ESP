@@ -82,29 +82,60 @@ struct ICM45Base {
 
 		struct FifoConfig0 {
 			static constexpr uint8_t reg = 0x1d;
-			static constexpr uint8_t value
-				= (0b01 << 6) | (0b011111);  // stream to FIFO mode, FIFO depth
+			static constexpr uint8_t value = 0x9e;
+				//= (0b10 << 6) | (0b011111);  // stream to FIFO mode, FIFO depth
 											 // 8k bytes <-- this disables all APEX
 											 // features, but we don't need them
 		};
 
+		struct FifoConfig1 {
+			static constexpr uint8_t reg = 0x1e;
+			static constexpr uint16_t value = 0x000a;
+		};
+
+		struct FifoConfig2 {
+			static constexpr uint8_t reg = 0x20;
+			static constexpr uint16_t value = 0x28;
+		};
+
 		struct FifoConfig3 {
 			static constexpr uint8_t reg = 0x21;
-			static constexpr uint8_t value = (0b1 << 0) | (0b1 << 1) | (0b1 << 2)
-										   | (0b1 << 3);  // enable FIFO,
+			static constexpr uint8_t value = 0x07;
+										  //= (0b1 << 0) | (0b1 << 1) | (0b1 << 2)
+										   //| (0b1 << 3);  // enable FIFO,
 														  // enable accel,
 														  // enable gyro,
 														  // enable hires mode
 		};
 
+		struct FifoConfig4 {
+			static constexpr uint8_t reg = 0x22;
+			static constexpr uint16_t value = 0x02;
+		};
+
 		struct PwrMgmt0 {
 			static constexpr uint8_t reg = 0x10;
-			static constexpr uint8_t value
-				= 0b11 | (0b11 << 2);  // accel in low noise mode, gyro in low noise
+			static constexpr uint8_t value = 0x0F;
+				//= 0b11 | (0b11 << 2);  // accel in low noise mode, gyro in low noise
 		};
 
 		static constexpr uint8_t FifoCount = 0x12;
 		static constexpr uint8_t FifoData = 0x14;
+
+		struct Int1Config0 {
+			static constexpr uint8_t reg = 0x16;
+			static constexpr uint8_t value = 0x02;
+		};
+
+		struct Int1Config1 {
+			static constexpr uint8_t reg = 0x17;
+			static constexpr uint8_t value = 0x00;
+		};
+
+		struct Int1Config2 {
+			static constexpr uint8_t reg = 0x18;
+			static constexpr uint8_t value = 0x01;
+		};
 
 		// Indirect Register Access
 
@@ -125,10 +156,15 @@ struct ICM45Base {
 
 		struct IOCPadScenarioAuxOvrd {
 			static constexpr uint8_t reg = 0x30;
-			static constexpr uint8_t value = (0b1 << 4)  // Enable AUX1 override
+			static constexpr uint8_t value = 0x0;/*= (0b1 << 4)  // Enable AUX1 override
 										   | (0b01 << 2)  // Enable I2CM master
 										   | (0b1 << 1)  // Enable AUX1 enable override
-										   | (0b1 << 0);  // Enable AUX1
+										   | (0b1 << 0);  // Enable AUX1*/
+		};
+
+		struct SmcControl0 {
+			static constexpr Bank bank = Bank::IPregTop1;
+			static constexpr uint8_t reg = 0x58;
 		};
 
 		struct I2CMCommand0 {
@@ -198,32 +234,81 @@ struct ICM45Base {
 		delay(35);
 	}
 
+	void dumpAllRegisters() {
+		m_Logger.info("Reg,Value");
+
+		for (uint8_t i = 16; i < 33; i++) {
+			uint8_t data = m_RegisterInterface.readReg(i);
+			m_Logger.info(
+				"%02x,%02x",
+				i,
+				data
+			);
+		}
+	}
+
 	bool initializeBase() {
-		// perform initialization step
+		// --- Interrupt Initialization ---
+		//INT1_CONFIG
 		m_RegisterInterface.writeReg(
-			BaseRegs::GyroConfig::reg,
-			BaseRegs::GyroConfig::value
+			BaseRegs::Int1Config2::reg,
+			BaseRegs::Int1Config2::value
 		);
+		m_RegisterInterface.writeReg(
+			BaseRegs::Int1Config1::reg,
+			BaseRegs::Int1Config1::value
+		);
+		// ACCEL_CONFIG0
 		m_RegisterInterface.writeReg(
 			BaseRegs::AccelConfig::reg,
 			BaseRegs::AccelConfig::value
 		);
+		// GYRO_CONFIG0
 		m_RegisterInterface.writeReg(
-			BaseRegs::FifoConfig0::reg,
-			BaseRegs::FifoConfig0::value
+			BaseRegs::GyroConfig::reg,
+			BaseRegs::GyroConfig::value
 		);
-		m_RegisterInterface.writeReg(
-			BaseRegs::FifoConfig3::reg,
-			BaseRegs::FifoConfig3::value
-		);
+		// PWR_MGMT0
 		m_RegisterInterface.writeReg(
 			BaseRegs::PwrMgmt0::reg,
 			BaseRegs::PwrMgmt0::value
 		);
 
+		// --- FIFO initialization ---
+		m_RegisterInterface.writeReg(BaseRegs::FifoConfig3::reg, 0);
 		m_RegisterInterface.writeReg(
-			BaseRegs::IOCPadScenarioAuxOvrd::reg,
-			BaseRegs::IOCPadScenarioAuxOvrd::value
+			BaseRegs::Int1Config0::reg,
+			BaseRegs::Int1Config0::value
+		);
+		m_RegisterInterface.writeReg(
+			BaseRegs::FifoConfig0::reg,
+			0x1e
+		);
+		writeBankRegister<typename BaseRegs::SmcControl0>(0x61);
+		m_RegisterInterface.writeReg16(
+			BaseRegs::FifoConfig1::reg,
+			BaseRegs::FifoConfig1::value
+		);
+		m_RegisterInterface.writeReg(
+			BaseRegs::FifoConfig2::reg,
+			BaseRegs::FifoConfig2::value
+		);
+		m_RegisterInterface.writeReg(
+			BaseRegs::FifoConfig3::reg,
+			0x0e
+		);
+		m_RegisterInterface.writeReg(
+			BaseRegs::FifoConfig4::reg,
+			BaseRegs::FifoConfig4::value
+		);
+		m_RegisterInterface.writeReg(
+			BaseRegs::FifoConfig0::reg,
+			0x9e
+		);
+		// Write FIFO_CONFIG3 last - FIFO_IF_EN
+		m_RegisterInterface.writeReg(
+			BaseRegs::FifoConfig3::reg,
+			0x0f
 		);
 
 		read_buffer.resize(FullFifoEntrySize * MaxReadings);
@@ -244,6 +329,10 @@ struct ICM45Base {
 		size_t fifo_packets = m_RegisterInterface.readReg16(BaseRegs::FifoCount);
 
 		if (fifo_packets <= 1) {
+			//m_Logger.error(
+			//	"Bulk read returned with %02x fifo_packets",
+			//	fifo_packets
+			//);
 			return;
 		}
 
@@ -346,6 +435,14 @@ struct ICM45Base {
 			Reg::reg,
 			bufferBytes[0],
 		};
+
+		m_Logger.info(
+				"writeBankRegister bank %02x, reg %02x, data %02x, length %02x",
+				data[0],
+				data[1],
+				data[2],
+				length
+			);
 
 		m_RegisterInterface.writeBytes(BaseRegs::IRegAddr, sizeof(data), data);
 		delayMicroseconds(BaseRegs::IRegWaitTimeMicros);

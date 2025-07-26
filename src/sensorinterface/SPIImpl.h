@@ -22,7 +22,7 @@
 */
 #pragma once
 
-#include <PinInterface.h>
+#include "sensorinterface/DirectPinInterface.h"
 #include <SPI.h>
 
 #include <cstdint>
@@ -36,15 +36,16 @@
 namespace SlimeVR::Sensors {
 
 struct SPIImpl : public RegisterInterface {
-	SPIImpl(DirectSPIInterface* spi, PinInterface* csPin)
+	SPIImpl(DirectSPIInterface* spi, DirectPinInterface* csPin)
 		: m_spi(spi)
 		, m_csPin(csPin) {
 		auto& spiSettings = spi->getSpiSettings();
 		m_Logger.info(
-			"SPI settings: clock: %d, bit order: 0x%02X, data mode: 0x%02X",
+			"SPI settings: clock: %d, bit order: 0x%02X, data mode: 0x%02X, csPin: %s",
 			spiSettings._clock,
 			spiSettings._bitOrder,
-			spiSettings._dataMode
+			spiSettings._dataMode,
+			csPin->toString().c_str()
 		);
 		csPin->pinMode(OUTPUT);
 		csPin->digitalWrite(HIGH);
@@ -73,6 +74,11 @@ struct SPIImpl : public RegisterInterface {
 	}
 
 	void writeReg(uint8_t regAddr, uint8_t value) const override {
+		m_Logger.info(
+			"writeReg addr: 0x%02X, value: 0x%02X",
+			regAddr,
+			value
+		);
 		m_spi->beginTransaction(m_csPin);
 
 		m_spi->transfer(regAddr);
@@ -82,6 +88,11 @@ struct SPIImpl : public RegisterInterface {
 	}
 
 	void writeReg16(uint8_t regAddr, uint16_t value) const override {
+		m_Logger.info(
+			"writeReg16 addr: 0x%02X, value: 0x%02X",
+			regAddr,
+			value
+		);
 		m_spi->beginTransaction(m_csPin);
 
 		m_spi->transfer(regAddr);

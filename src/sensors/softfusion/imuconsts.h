@@ -57,7 +57,8 @@ struct IMUConsts {
 		}
 	}
 
-	static constexpr bool SupportsMags = requires(IMU& i) { i.readAux(0x00); };
+	//static constexpr bool SupportsMags = requires(IMU& i) { i.readAux(0x00); };
+	static constexpr bool SupportsMags = false;
 	static constexpr bool Supports9ByteMag = []() constexpr {
 		if constexpr (requires { IMU::Supports9ByteMag; }) {
 			return IMU::Supports9ByteMag;
