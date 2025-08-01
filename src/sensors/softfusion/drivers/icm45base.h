@@ -156,10 +156,10 @@ struct ICM45Base {
 
 		struct IOCPadScenarioAuxOvrd {
 			static constexpr uint8_t reg = 0x30;
-			static constexpr uint8_t value = 0x0;/*= (0b1 << 4)  // Enable AUX1 override
-										   | (0b01 << 2)  // Enable I2CM master
-										   | (0b1 << 1)  // Enable AUX1 enable override
-										   | (0b1 << 0);  // Enable AUX1*/
+			static constexpr uint8_t value = 0x17; //   (0b1  << 4)  // Enable AUX1 override
+										           // | (0b01 << 2)  // Enable I2CM master
+										           // | (0b1  << 1)  // Enable AUX1 enable override
+										           // | (0b1  << 0); // Enable AUX1
 		};
 
 		struct SmcControl0 {
@@ -309,6 +309,11 @@ struct ICM45Base {
 		m_RegisterInterface.writeReg(
 			BaseRegs::FifoConfig3::reg,
 			0x0f
+		);
+
+		m_RegisterInterface.writeReg(
+			BaseRegs::IOCPadScenarioAuxOvrd::reg,
+			BaseRegs::IOCPadScenarioAuxOvrd::value
 		);
 
 		read_buffer.resize(FullFifoEntrySize * MaxReadings);

@@ -26,7 +26,7 @@
 namespace SlimeVR::Sensors::SoftFusion {
 
 std::vector<MagDefinition> MagDriver::supportedMags{
-	MagDefinition{
+	/*MagDefinition{
 		.name = "QMC6309",
 
 		.deviceId = 0x7c,
@@ -49,8 +49,27 @@ std::vector<MagDefinition> MagDriver::supportedMags{
 				);  // LP filter 2, 8x Oversampling, normal mode
 				return true;
 			},
-	},
+	},*/
 	MagDefinition{
+		.name = "AK09940A",
+
+		.deviceId = 0x0c,
+
+		.whoAmIReg = 0x00,
+		.expectedWhoAmI = 0x48,
+
+		.dataWidth = MagDataWidth::NineByte,
+		.dataReg = 0x11,
+
+		.setup =
+			[](MagInterface& interface) {
+				interface.writeByte(0x33, 0x01);  // Soft reset - self clearing
+				delay(10);
+				interface.writeByte(0x32, 0x02);  // Continuous Measurement 1 - 10Hz
+				return true;
+			},
+	},
+	/*MagDefinition{
 		.name = "IST8306",
 
 		.deviceId = 0x19,
@@ -70,7 +89,7 @@ std::vector<MagDefinition> MagDriver::supportedMags{
 				interface.writeByte(0x31, 0x02);  // Continuous measurement @ 10Hz
 				return true;
 			},
-	},
+	},*/
 };
 
 bool MagDriver::init(MagInterface&& interface, bool supports9ByteMags) {
@@ -80,6 +99,7 @@ bool MagDriver::init(MagInterface&& interface, bool supports9ByteMags) {
 		logger.info("Trying mag %s!", mag.name);
 
 		uint8_t whoAmI = interface.readByte(mag.whoAmIReg);
+		logger.info("whoAmI = 0x%2x expected = 0x%2x", whoAmI, mag.expectedWhoAmI);
 		if (whoAmI != mag.expectedWhoAmI) {
 			continue;
 		}

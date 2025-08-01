@@ -181,7 +181,7 @@ public:
 
 	void checkSensorTimeout() {
 		uint32_t now = millis();
-		constexpr uint32_t sensorTimeoutMillis = 10e3;  // 2 seconds
+		constexpr uint32_t sensorTimeoutMillis = 2e3;  // 2 seconds
 		if (m_lastRotationUpdateMillis + sensorTimeoutMillis > now) {
 			return;
 		}
